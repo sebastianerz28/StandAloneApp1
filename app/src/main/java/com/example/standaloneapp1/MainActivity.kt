@@ -1,27 +1,15 @@
 package com.example.standaloneapp1
 
-import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.provider.MediaStore.Images.Media
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-
-import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
     private lateinit var cameraBtn:Button
@@ -50,12 +38,12 @@ class MainActivity : AppCompatActivity() {
         }
         cameraBtn.setOnClickListener {
 
-            var i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(i, 101)
 
         }
         submitButton.setOnClickListener {
-            if(checkFirstText() && checkMiddleText() && checkLastText() && imagebitmap != null){
+            if(checkFirstText() && checkMiddleText() && checkLastText() && checkBitmapEmpty(imagebitmap)){
                 var intent = Intent(this, MainActivity2::class.java)
                 val bundle = Bundle()
                 bundle.putString("first", first.text.toString())
@@ -80,12 +68,14 @@ class MainActivity : AppCompatActivity() {
     fun checkLastText(): Boolean {
         return last.text != null && last.text.toString() != ""
     }
-
+    fun checkBitmapEmpty(bitmap: Bitmap): Boolean {
+        return bitmap.width == 0 && bitmap.height == 0
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == 101){
-            var pic = data!!.getParcelableExtra<Bitmap>("data")
+            var pic = data!!.getParcelableExtra("data", Bitmap::class.java)
             image.setImageBitmap(pic)
             imagebitmap = pic!!
 
